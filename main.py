@@ -1,5 +1,3 @@
-from typing import Union
-
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import HTMLResponse
 
@@ -43,7 +41,7 @@ def upload_file(
             tp.connect(username="upload", password="upload")
             sftpClient = paramiko.SFTPClient.from_transport(tp)
 
-            up = sftpClient.putfo(file.file, '/upload.png')
+            up = sftpClient.putfo(file.file, '/' + file.filename)
 
             # Make sure to close all created objects.
             sftpClient.close()
@@ -58,7 +56,9 @@ def upload_file(
         return {"message": "There was an error uploading the file"}
     finally:
         file.file.close()
+
     return {
         "content_type": file.content_type,
+        "size": up.st_size
     }
 
